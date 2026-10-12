@@ -3,6 +3,7 @@ FleetOps Cloud — Base Django Settings.
 Shared settings across all environments (development, staging, production).
 """
 
+import sys
 from pathlib import Path
 
 import environ
@@ -89,11 +90,19 @@ WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
 # Database
-# Default to SQLite for offline checking / test runs if DATABASE_URL is not set,
-# or connect to PostgreSQL via env DATABASE_URL.
-DATABASES = {
-    "default": env.db("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
-}
+# Default to SQLite for local/offline test runs; PostgreSQL remains available when
+# explicitly configured for development or production.
+if "pytest" in sys.modules:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "test_db.sqlite3",
+        }
+    }
+else:
+    DATABASES = {
+        "default": env.db("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
+    }
 
 # Custom User Model (Crucial SaaS Invariant)
 AUTH_USER_MODEL = "accounts.User"
