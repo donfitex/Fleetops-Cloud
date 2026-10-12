@@ -3,6 +3,8 @@ FleetOps Cloud — Vehicle Models.
 Tenant-scoped vehicle management.
 """
 
+from decimal import Decimal
+
 from django.core.validators import MinValueValidator
 from django.db import models
 
@@ -61,7 +63,7 @@ class Vehicle(TenantModel):
         max_digits=10,
         decimal_places=2,
         default=0.0,
-        validators=[MinValueValidator(0.0)],
+        validators=[MinValueValidator(Decimal("0.00"))],
         help_text="Current odometer reading in km or miles.",
     )
 
