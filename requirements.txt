@@ -1,0 +1,21 @@
+# ==============================================================================
+# FLEETOPS CLOUD — BASE & PRODUCTION DEPENDENCIES
+# ==============================================================================
+
+# Core Framework
+Django>=5.1,<6.0
+django-environ>=0.11.2
+
+# Database Connectivity (PostgreSQL 18 compatible)
+psycopg[binary]>=3.2.0
+
+# REST API & Filtering
+djangorestframework>=3.15.2
+django-filter>=24.3
+drf-spectacular>=0.27.2
+
+# Static File Handling
+whitenoise>=6.8.2
+
+# Production WSGI Server
+gunicorn>=23.0.0
