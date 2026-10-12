@@ -54,6 +54,7 @@ LOCAL_APPS = [
     "apps.drivers",
     "apps.assignments",
     "apps.maintenance",
+    "apps.operations",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
