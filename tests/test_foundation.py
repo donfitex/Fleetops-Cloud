@@ -1,6 +1,7 @@
 import pytest
+
 from apps.accounts.models import User
-from apps.organizations.models import Organization, Membership, OrganizationRole
+from apps.organizations.models import Membership, Organization, OrganizationRole
 
 
 @pytest.mark.django_db
