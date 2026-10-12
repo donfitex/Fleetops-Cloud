@@ -84,3 +84,17 @@ def test_vehicle_api_create_scopes_record_to_user_org(api_client, user_a, org_a)
     vehicle = Vehicle.objects.get(pk=response.json()["id"])
     assert vehicle.organization == org_a
     assert vehicle.registration_number == "API-300"
+
+
+@pytest.mark.django_db
+def test_token_login_returns_auth_token(api_client, user_a):
+    response = api_client.post(
+        "/api/v1/auth/login/",
+        {"email": user_a.email, "password": "StrongPassword123!"},
+        format="json",
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert "token" in payload
+    assert payload["user"]["email"] == user_a.email

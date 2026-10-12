@@ -14,6 +14,7 @@ from apps.api.views import (
     VehicleAssignmentViewSet,
     VehicleViewSet,
     WorkOrderViewSet,
+    login_user,
 )
 
 router = DefaultRouter()
@@ -31,5 +32,6 @@ router.register(r"documents", FleetDocumentViewSet, basename="documents")
 router.register(r"audit-trails", AuditTrailViewSet, basename="audit-trails")
 
 urlpatterns = [
+    path("auth/login/", login_user, name="api-login"),
     path("", include(router.urls)),
 ]
