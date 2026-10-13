@@ -86,3 +86,35 @@ class Membership(TimeStampedModel):
 
     def __str__(self):
         return f"{self.user} - {self.organization} ({self.get_role_display()})"
+
+    @property
+    def is_owner(self):
+        return self.role == OrganizationRole.OWNER
+
+    @property
+    def is_admin(self):
+        return self.role == OrganizationRole.ADMIN
+
+    @property
+    def is_fleet_manager(self):
+        return self.role == OrganizationRole.FLEET_MANAGER
+
+    @property
+    def is_driver(self):
+        return self.role == OrganizationRole.DRIVER
+
+    @property
+    def is_viewer(self):
+        return self.role == OrganizationRole.VIEWER
+
+    @property
+    def can_read(self):
+        return self.is_active
+
+    @property
+    def can_write(self):
+        return self.role in {
+            OrganizationRole.OWNER,
+            OrganizationRole.ADMIN,
+            OrganizationRole.FLEET_MANAGER,
+        }

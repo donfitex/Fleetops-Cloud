@@ -14,6 +14,7 @@ from apps.fleet.models import Vehicle
 from apps.maintenance.models import MaintenanceSchedule, WorkOrder
 from apps.operations.models import FuelLog, Trip
 from apps.organizations.models import Membership, Organization
+from apps.api.permissions import OrganizationRolePermission
 from apps.api.serializers import (
     AuditTrailSerializer,
     DriverSerializer,
@@ -65,7 +66,7 @@ def login_user(request):
 
 
 class TenantScopedViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, OrganizationRolePermission]
 
     def get_user_organization_ids(self):
         return list(

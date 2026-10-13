@@ -87,6 +87,37 @@ def test_vehicle_api_create_scopes_record_to_user_org(api_client, user_a, org_a)
 
 
 @pytest.mark.django_db
+def test_viewer_cannot_create_vehicle(api_client, org_a):
+    user = User.objects.create_user(
+        email="viewer@example.com",
+        password="StrongPassword123!",
+        first_name="Viewer",
+        last_name="User",
+    )
+    Membership.objects.create(
+        user=user,
+        organization=org_a,
+        role=OrganizationRole.VIEWER,
+    )
+
+    api_client.force_authenticate(user=user)
+    response = api_client.post(
+        "/api/v1/vehicles/",
+        {
+            "registration_number": "API-400",
+            "make": "Renault",
+            "model": "Master",
+            "year": 2024,
+            "current_odometer": "8000",
+        },
+        format="json",
+    )
+
+    assert response.status_code == 403
+    assert Vehicle.objects.filter(registration_number="API-400").count() == 0
+
+
+@pytest.mark.django_db
 def test_token_login_returns_auth_token(api_client, user_a):
     response = api_client.post(
         "/api/v1/auth/login/",
