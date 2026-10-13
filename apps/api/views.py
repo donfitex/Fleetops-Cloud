@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate
-from django.db.models import Q
+from django.db.models import Q, Sum
 from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
@@ -59,6 +59,84 @@ def login_user(request):
                 "email": user.email,
                 "first_name": user.first_name,
                 "last_name": user.last_name,
+            },
+        },
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated, OrganizationRolePermission])
+def dashboard_summary(request):
+    organization_ids = list(
+        Membership.objects.filter(user=request.user, is_active=True).values_list(
+            "organization_id", flat=True
+        )
+    )
+
+    if not organization_ids:
+        return Response(
+            {
+                "organizations": [],
+                "totals": {
+                    "vehicles": 0,
+                    "drivers": 0,
+                    "active_assignments": 0,
+                    "open_work_orders": 0,
+                    "monthly_expense_total": 0.0,
+                },
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    organizations = Organization.objects.filter(id__in=organization_ids)
+    summary = []
+    total_vehicles = 0
+    total_drivers = 0
+    total_active_assignments = 0
+    total_open_work_orders = 0
+    total_monthly_expenses = 0.0
+
+    for organization in organizations:
+        vehicles = Vehicle.objects.filter(organization=organization)
+        drivers = Driver.objects.filter(organization=organization)
+        active_assignments = VehicleAssignment.objects.filter(
+            organization=organization,
+            status="ACTIVE",
+        )
+        open_work_orders = WorkOrder.objects.filter(
+            organization=organization,
+        ).exclude(status__in=["COMPLETED", "CANCELLED"])
+        monthly_total = Expense.objects.filter(
+            organization=organization,
+        ).aggregate(total=Sum("amount"))["total"] or 0
+
+        organization_summary = {
+            "organization_id": organization.id,
+            "organization_name": organization.name,
+            "vehicle_count": vehicles.count(),
+            "driver_count": drivers.count(),
+            "active_assignment_count": active_assignments.count(),
+            "open_work_order_count": open_work_orders.count(),
+            "monthly_expense_total": float(monthly_total),
+        }
+        summary.append(organization_summary)
+
+        total_vehicles += organization_summary["vehicle_count"]
+        total_drivers += organization_summary["driver_count"]
+        total_active_assignments += organization_summary["active_assignment_count"]
+        total_open_work_orders += organization_summary["open_work_order_count"]
+        total_monthly_expenses += organization_summary["monthly_expense_total"]
+
+    return Response(
+        {
+            "organizations": summary,
+            "totals": {
+                "vehicles": total_vehicles,
+                "drivers": total_drivers,
+                "active_assignments": total_active_assignments,
+                "open_work_orders": total_open_work_orders,
+                "monthly_expense_total": float(total_monthly_expenses),
             },
         },
         status=status.HTTP_200_OK,

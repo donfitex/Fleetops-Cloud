@@ -1,8 +1,14 @@
+from datetime import date
+
 import pytest
 from rest_framework.test import APIClient
 
 from apps.accounts.models import User
+from apps.assignments.models import AssignmentStatus, VehicleAssignment
+from apps.drivers.models import Driver
+from apps.expenses.models import Expense
 from apps.fleet.models import Vehicle
+from apps.maintenance.models import MaintenanceStatus, WorkOrder
 from apps.organizations.models import Membership, Organization, OrganizationRole
 
 
@@ -115,6 +121,62 @@ def test_viewer_cannot_create_vehicle(api_client, org_a):
 
     assert response.status_code == 403
     assert Vehicle.objects.filter(registration_number="API-400").count() == 0
+
+
+@pytest.mark.django_db
+def test_dashboard_summary_returns_tenant_metrics(api_client, user_a, org_a):
+    vehicle = Vehicle.objects.create(
+        organization=org_a,
+        registration_number="API-500",
+        make="Volvo",
+        model="FH",
+        year=2024,
+        current_odometer=42000,
+    )
+    driver = Driver.objects.create(
+        organization=org_a,
+        first_name="Dana",
+        last_name="Rivers",
+        phone_number="555-0100",
+        license_number="LIC-500",
+        email="driver@fleetops.com",
+    )
+    VehicleAssignment.objects.create(
+        organization=org_a,
+        vehicle=vehicle,
+        driver=driver,
+        status=AssignmentStatus.ACTIVE,
+    )
+    WorkOrder.objects.create(
+        organization=org_a,
+        vehicle=vehicle,
+        title="Brake inspection",
+        maintenance_type="BRAKE_SERVICE",
+        status=MaintenanceStatus.IN_PROGRESS,
+        priority="HIGH",
+        service_cost="250.00",
+        odometer_reading=42050,
+    )
+    Expense.objects.create(
+        organization=org_a,
+        vehicle=vehicle,
+        driver=driver,
+        category="FUEL",
+        title="Fuel top-up",
+        amount="120.00",
+        occurred_on=date.today(),
+    )
+
+    api_client.force_authenticate(user=user_a)
+    response = api_client.get("/api/v1/dashboard/summary/")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["totals"]["vehicles"] == 1
+    assert payload["totals"]["drivers"] == 1
+    assert payload["totals"]["active_assignments"] == 1
+    assert payload["totals"]["open_work_orders"] == 1
+    assert payload["totals"]["monthly_expense_total"] == 120.0
 
 
 @pytest.mark.django_db
