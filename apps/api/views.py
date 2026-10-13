@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q, Sum
+from django.db.models import Sum
 from django.shortcuts import render
 from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
@@ -8,14 +8,6 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from apps.assignments.models import VehicleAssignment
-from apps.drivers.models import Driver
-from apps.documents.models import AuditTrail, FleetDocument
-from apps.expenses.models import Expense
-from apps.fleet.models import Vehicle
-from apps.maintenance.models import MaintenanceSchedule, WorkOrder
-from apps.operations.models import FuelLog, Trip
-from apps.organizations.models import Membership, Organization
 from apps.api.permissions import OrganizationRolePermission
 from apps.api.serializers import (
     AuditTrailSerializer,
@@ -31,6 +23,14 @@ from apps.api.serializers import (
     VehicleSerializer,
     WorkOrderSerializer,
 )
+from apps.assignments.models import VehicleAssignment
+from apps.documents.models import AuditTrail, FleetDocument
+from apps.drivers.models import Driver
+from apps.expenses.models import Expense
+from apps.fleet.models import Vehicle
+from apps.maintenance.models import MaintenanceSchedule, WorkOrder
+from apps.operations.models import FuelLog, Trip
+from apps.organizations.models import Membership, Organization
 
 
 @api_view(["POST"])

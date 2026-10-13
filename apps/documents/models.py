@@ -73,7 +73,11 @@ class FleetDocument(TenantModel):
                 "driver": "The selected driver does not belong to this organization."
             })
 
-        if self.vehicle and self.driver and self.vehicle.organization_id != self.driver.organization_id:
+        if (
+            self.vehicle
+            and self.driver
+            and self.vehicle.organization_id != self.driver.organization_id
+        ):
             raise ValidationError({
                 "driver": "The selected driver and vehicle must belong to the same organization."
             })

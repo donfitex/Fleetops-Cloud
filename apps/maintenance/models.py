@@ -137,7 +137,9 @@ class WorkOrder(TenantModel):
         if self.schedule:
             if self.schedule.organization_id != self.organization_id:
                 raise ValidationError({
-                    "schedule": "The selected maintenance schedule does not belong to this organization."
+                    "schedule": (
+                        "The selected maintenance schedule does not belong to this organization."
+                    )
                 })
             if self.schedule.vehicle_id != self.vehicle_id:
                 raise ValidationError({

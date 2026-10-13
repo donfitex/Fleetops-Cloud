@@ -1,5 +1,6 @@
-import pytest
 from decimal import Decimal
+
+import pytest
 from django.core.exceptions import ValidationError
 
 from apps.drivers.models import Driver
@@ -80,7 +81,9 @@ def test_fuel_log_creation_and_total_cost(org_a, vehicle_a):
 
 
 @pytest.mark.django_db
-def test_trip_rejects_invalid_odometer_and_cross_tenant_driver(org_a, org_b, vehicle_a, vehicle_b, driver_a, driver_b):
+def test_trip_rejects_invalid_odometer_and_cross_tenant_driver(
+    org_a, org_b, vehicle_a, vehicle_b, driver_a, driver_b
+):
     with pytest.raises(ValidationError):
         Trip.objects.create(
             organization=org_a,

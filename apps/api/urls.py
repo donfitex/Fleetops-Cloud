@@ -24,7 +24,9 @@ router.register(r"memberships", MembershipViewSet, basename="memberships")
 router.register(r"vehicles", VehicleViewSet, basename="vehicles")
 router.register(r"drivers", DriverViewSet, basename="drivers")
 router.register(r"assignments", VehicleAssignmentViewSet, basename="assignments")
-router.register(r"maintenance-schedules", MaintenanceScheduleViewSet, basename="maintenance-schedules")
+router.register(
+    r"maintenance-schedules", MaintenanceScheduleViewSet, basename="maintenance-schedules"
+)
 router.register(r"work-orders", WorkOrderViewSet, basename="work-orders")
 router.register(r"fuel-logs", FuelLogViewSet, basename="fuel-logs")
 router.register(r"trips", TripViewSet, basename="trips")

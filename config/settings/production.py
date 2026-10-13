@@ -8,7 +8,7 @@ DEBUG = False
 
 # Strict host check
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS")  # noqa: F405
-CSRF_TRUSTED_ORIGINS = env.list(
+CSRF_TRUSTED_ORIGINS = env.list(  # noqa: F405
     "DJANGO_CSRF_TRUSTED_ORIGINS",
     default=["http://localhost:8000", "http://127.0.0.1:8000"],
 )  # noqa: F405

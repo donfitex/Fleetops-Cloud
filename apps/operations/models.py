@@ -69,7 +69,13 @@ class FuelLog(TenantModel):
 
     def clean(self):
         super().clean()
-        if self.total_cost and self.quantity and self.unit_cost and self.total_cost != self.quantity * self.unit_cost:
+        cost_differs = (
+            self.total_cost
+            and self.quantity
+            and self.unit_cost
+            and self.total_cost != self.quantity * self.unit_cost
+        )
+        if cost_differs:
             raise ValidationError({
                 "total_cost": "Total cost must equal quantity multiplied by unit cost."
             })
@@ -138,7 +144,11 @@ class Trip(TenantModel):
                 "vehicle": "The selected vehicle does not belong to this organization."
             })
 
-        if self.vehicle_id and self.driver and self.vehicle.organization_id != self.driver.organization_id:
+        if (
+            self.vehicle_id
+            and self.driver
+            and self.vehicle.organization_id != self.driver.organization_id
+        ):
             raise ValidationError({
                 "vehicle": "The selected vehicle and driver must belong to the same organization."
             })

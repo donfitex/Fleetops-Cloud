@@ -1,5 +1,6 @@
-import pytest
 from decimal import Decimal
+
+import pytest
 from django.core.exceptions import ValidationError
 
 from apps.drivers.models import Driver
@@ -81,7 +82,9 @@ def test_expense_creation_and_amount_validation(org_a, vehicle_a, driver_a):
 
 
 @pytest.mark.django_db
-def test_expense_rejects_cross_tenant_vehicle_or_driver(org_a, org_b, vehicle_a, vehicle_b, driver_a, driver_b):
+def test_expense_rejects_cross_tenant_vehicle_or_driver(
+    org_a, org_b, vehicle_a, vehicle_b, driver_a, driver_b
+):
     with pytest.raises(ValidationError):
         Expense.objects.create(
             organization=org_a,

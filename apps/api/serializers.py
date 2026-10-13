@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
 from apps.assignments.models import VehicleAssignment
-from apps.drivers.models import Driver
 from apps.documents.models import AuditTrail, FleetDocument
+from apps.drivers.models import Driver
 from apps.expenses.models import Expense
 from apps.fleet.models import Vehicle
 from apps.maintenance.models import MaintenanceSchedule, WorkOrder
