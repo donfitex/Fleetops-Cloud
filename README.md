@@ -54,6 +54,16 @@ Visit:
 - API Documentation (Swagger UI): `http://127.0.0.1:8000/api/docs/`
 - API Redoc: `http://127.0.0.1:8000/api/redoc/`
 
+### 5. Docker Quickstart
+```powershell
+# Build and start the app stack with PostgreSQL
+ docker compose up --build
+
+# Stop the stack
+ docker compose down
+```
+The containerized app runs the Django app with Gunicorn, migrates the schema automatically, and serves traffic on `http://localhost:8000`.
+
 ---
 
 ## Testing & Quality Assurance
