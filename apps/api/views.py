@@ -1,5 +1,7 @@
 from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Sum
+from django.shortcuts import render
 from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
@@ -140,6 +142,66 @@ def dashboard_summary(request):
             },
         },
         status=status.HTTP_200_OK,
+    )
+
+
+@login_required
+def dashboard_page(request):
+    organization_ids = list(
+        Membership.objects.filter(user=request.user, is_active=True).values_list(
+            "organization_id", flat=True
+        )
+    )
+    organizations = Organization.objects.filter(id__in=organization_ids)
+
+    dashboard_rows = []
+    total_vehicles = 0
+    total_drivers = 0
+    total_active_assignments = 0
+    total_open_work_orders = 0
+    total_monthly_expenses = 0.0
+
+    for organization in organizations:
+        vehicles = Vehicle.objects.filter(organization=organization)
+        drivers = Driver.objects.filter(organization=organization)
+        active_assignments = VehicleAssignment.objects.filter(
+            organization=organization,
+            status="ACTIVE",
+        )
+        open_work_orders = WorkOrder.objects.filter(
+            organization=organization,
+        ).exclude(status__in=["COMPLETED", "CANCELLED"])
+        monthly_total = Expense.objects.filter(
+            organization=organization,
+        ).aggregate(total=Sum("amount"))["total"] or 0
+
+        row = {
+            "organization_name": organization.name,
+            "vehicle_count": vehicles.count(),
+            "driver_count": drivers.count(),
+            "active_assignment_count": active_assignments.count(),
+            "open_work_order_count": open_work_orders.count(),
+            "monthly_expense_total": float(monthly_total),
+        }
+        dashboard_rows.append(row)
+
+        total_vehicles += row["vehicle_count"]
+        total_drivers += row["driver_count"]
+        total_active_assignments += row["active_assignment_count"]
+        total_open_work_orders += row["open_work_order_count"]
+        total_monthly_expenses += row["monthly_expense_total"]
+
+    return render(
+        request,
+        "dashboard.html",
+        {
+            "organizations": dashboard_rows,
+            "total_vehicles": total_vehicles,
+            "total_drivers": total_drivers,
+            "total_active_assignments": total_active_assignments,
+            "total_open_work_orders": total_open_work_orders,
+            "total_monthly_expenses": total_monthly_expenses,
+        },
     )
 
 

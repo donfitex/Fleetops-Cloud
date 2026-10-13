@@ -10,8 +10,11 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 
+from apps.api.views import dashboard_page
+
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("dashboard/", dashboard_page, name="dashboard"),
     path("api/v1/", include("apps.api.urls")),
     # OpenAPI Schema & Docs
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),

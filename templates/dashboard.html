@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FleetOps Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 24px;
+        }
+        h1 {
+            margin-top: 0;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+            margin: 24px 0;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 18px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .label {
+            color: #6b7280;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        th, td {
+            text-align: left;
+            padding: 12px 14px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        th {
+            background: #eef2ff;
+        }
+        .empty {
+            padding: 24px;
+            background: white;
+            border-radius: 10px;
+            color: #4b5563;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>FleetOps Dashboard</h1>
+
+        <div class="grid">
+            <div class="card">
+                <div class="label">Vehicles</div>
+                <div class="value">{{ total_vehicles }}</div>
+            </div>
+            <div class="card">
+                <div class="label">Drivers</div>
+                <div class="value">{{ total_drivers }}</div>
+            </div>
+            <div class="card">
+                <div class="label">Active assignments</div>
+                <div class="value">{{ total_active_assignments }}</div>
+            </div>
+            <div class="card">
+                <div class="label">Open work orders</div>
+                <div class="value">{{ total_open_work_orders }}</div>
+            </div>
+            <div class="card">
+                <div class="label">Monthly spend</div>
+                <div class="value">$ {{ total_monthly_expenses|floatformat:2 }}</div>
+            </div>
+        </div>
+
+        {% if organizations %}
+        <h2>Organization overview</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Organization</th>
+                    <th>Vehicles</th>
+                    <th>Drivers</th>
+                    <th>Active assignments</th>
+                    <th>Open work orders</th>
+                    <th>Monthly spend</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for org in organizations %}
+                <tr>
+                    <td>{{ org.organization_name }}</td>
+                    <td>{{ org.vehicle_count }}</td>
+                    <td>{{ org.driver_count }}</td>
+                    <td>{{ org.active_assignment_count }}</td>
+                    <td>{{ org.open_work_order_count }}</td>
+                    <td>$ {{ org.monthly_expense_total|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">
+            No active organization memberships were found for this user. Add a membership to see dashboard data.
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

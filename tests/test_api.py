@@ -180,6 +180,59 @@ def test_dashboard_summary_returns_tenant_metrics(api_client, user_a, org_a):
 
 
 @pytest.mark.django_db
+def test_dashboard_page_renders_summary(client, user_a, org_a):
+    vehicle = Vehicle.objects.create(
+        organization=org_a,
+        registration_number="WEB-900",
+        make="Isuzu",
+        model="FTR",
+        year=2023,
+        current_odometer=28000,
+    )
+    driver = Driver.objects.create(
+        organization=org_a,
+        first_name="Alex",
+        last_name="Smith",
+        phone_number="555-1234",
+        license_number="LIC-900",
+    )
+    VehicleAssignment.objects.create(
+        organization=org_a,
+        vehicle=vehicle,
+        driver=driver,
+        status=AssignmentStatus.ACTIVE,
+    )
+    WorkOrder.objects.create(
+        organization=org_a,
+        vehicle=vehicle,
+        title="Tire check",
+        maintenance_type="TIRES",
+        status=MaintenanceStatus.IN_PROGRESS,
+        priority="MEDIUM",
+        service_cost="180.00",
+        odometer_reading=28050,
+    )
+    Expense.objects.create(
+        organization=org_a,
+        vehicle=vehicle,
+        driver=driver,
+        category="FUEL",
+        title="Fuel top-up",
+        amount="90.00",
+        occurred_on=date.today(),
+    )
+
+    client.force_login(user_a)
+    response = client.get("/dashboard/")
+
+    assert response.status_code == 200
+    content = response.content.decode()
+    assert "FleetOps Dashboard" in content
+    assert "API Tenant A" in content
+    assert "1" in content
+
+
+@pytest.mark.django_db
 def test_token_login_returns_auth_token(api_client, user_a):
     response = api_client.post(
         "/api/v1/auth/login/",
