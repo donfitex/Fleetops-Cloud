@@ -174,3 +174,11 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
 }
+
+# Authentication redirects
+# Where to send users who try to access a @login_required page without being logged in
+LOGIN_URL = "/accounts/login/"
+# Where to send users after a successful login
+LOGIN_REDIRECT_URL = "/dashboard/"
+# Where to send users after logout
+LOGOUT_REDIRECT_URL = "/accounts/login/"

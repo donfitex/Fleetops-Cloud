@@ -1,3 +1,4 @@
+import re
 from datetime import date
 
 import pytest
@@ -227,7 +228,8 @@ def test_dashboard_page_renders_summary(client, user_a, org_a):
 
     assert response.status_code == 200
     content = response.content.decode()
-    assert "FleetOps Dashboard" in content
+    assert "<title>Dashboard" in content
+    assert re.search(r"<h1[^>]*>\s*Dashboard\s*</h1>", content)
     assert "API Tenant A" in content
     assert "1" in content
 

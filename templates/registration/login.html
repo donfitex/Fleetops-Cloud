@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sign In{% endblock %}
+
+{% block auth_content %}
+<div class="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
+  <div class="w-full max-w-md space-y-8">
+
+    {# Brand header #}
+    <div class="text-center">
+      <p class="text-4xl mb-3">⚡</p>
+      <h1 class="text-3xl font-bold tracking-tight text-gray-900">FleetOps Cloud</h1>
+      <p class="mt-2 text-sm text-gray-600">Sign in to your account to continue</p>
+    </div>
+
+    {# Login card #}
+    <div class="rounded-2xl bg-white px-8 py-10 shadow-sm ring-1 ring-gray-200">
+
+      {# Django non-field errors (wrong password etc.) #}
+      {% if form.non_field_errors %}
+      <div class="mb-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-200">
+        {% for error in form.non_field_errors %}
+        <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <form method="post" action="{% url 'login' %}" novalidate class="space-y-5">
+        {% csrf_token %}
+        {% if next %}
+        <input type="hidden" name="next" value="{{ next }}" />
+        {% endif %}
+
+        {# Email field #}
+        <div>
+          <label for="{{ form.username.id_for_label }}"
+                 class="block text-sm font-medium text-gray-700 mb-1.5">
+            Email address
+          </label>
+          <input
+            type="email"
+            name="{{ form.username.html_name }}"
+            id="{{ form.username.id_for_label }}"
+            value="{{ form.username.value|default:'' }}"
+            autocomplete="email"
+            autofocus
+            required
+            class="block w-full rounded-lg border-gray-300 px-3.5 py-2.5 text-sm
+                   shadow-sm placeholder-gray-400 focus:border-brand-500 focus:ring-brand-500
+                   {% if form.username.errors %}border-red-300 bg-red-50{% endif %}"
+            placeholder="you@example.com"
+          />
+          {% if form.username.errors %}
+          <p class="mt-1.5 text-xs text-red-600">{{ form.username.errors|join:" " }}</p>
+          {% endif %}
+        </div>
+
+        {# Password field #}
+        <div>
+          <label for="{{ form.password.id_for_label }}"
+                 class="block text-sm font-medium text-gray-700 mb-1.5">
+            Password
+          </label>
+          <input
+            type="password"
+            name="{{ form.password.html_name }}"
+            id="{{ form.password.id_for_label }}"
+            autocomplete="current-password"
+            required
+            class="block w-full rounded-lg border-gray-300 px-3.5 py-2.5 text-sm
+                   shadow-sm placeholder-gray-400 focus:border-brand-500 focus:ring-brand-500
+                   {% if form.password.errors %}border-red-300 bg-red-50{% endif %}"
+            placeholder="••••••••"
+          />
+        </div>
+
+        {# Submit #}
+        <button type="submit"
+                class="btn-primary w-full py-2.5 text-base">
+          Sign in
+        </button>
+
+      </form>
+
+    </div>
+
+    <p class="text-center text-xs text-gray-400">
+      FleetOps Cloud &copy; {% now "Y" %} — Fleet Operations Platform
+    </p>
+
+  </div>
+</div>
+{% endblock %}
