@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
@@ -160,6 +162,8 @@ def dashboard_page(request):
     total_active_assignments = 0
     total_open_work_orders = 0
     total_monthly_expenses = 0.0
+    status_breakdown = {"ACTIVE": 0, "INACTIVE": 0, "MAINTENANCE": 0}
+    work_order_breakdown = {"OPEN": 0, "IN_PROGRESS": 0, "COMPLETED": 0}
 
     for organization in organizations:
         vehicles = Vehicle.objects.filter(organization=organization)
@@ -191,6 +195,33 @@ def dashboard_page(request):
         total_open_work_orders += row["open_work_order_count"]
         total_monthly_expenses += row["monthly_expense_total"]
 
+        for vehicle in vehicles:
+            status = getattr(vehicle, "status", "ACTIVE")
+            if status in status_breakdown:
+                status_breakdown[status] += 1
+            else:
+                status_breakdown["ACTIVE"] += 1
+
+        work_orders_for_org = WorkOrder.objects.filter(organization=organization)
+        for work_order in work_orders_for_org:
+            if work_order.status in {"COMPLETED", "CANCELLED"}:
+                work_order_breakdown["COMPLETED"] += 1
+            elif work_order.status == "IN_PROGRESS":
+                work_order_breakdown["IN_PROGRESS"] += 1
+            else:
+                work_order_breakdown["OPEN"] += 1
+
+    chart_data = {
+        "status_breakdown": [
+            {"label": label, "value": value}
+            for label, value in status_breakdown.items()
+        ],
+        "work_order_breakdown": [
+            {"label": label, "value": value}
+            for label, value in work_order_breakdown.items()
+        ],
+    }
+
     return render(
         request,
         "dashboard.html",
@@ -201,6 +232,8 @@ def dashboard_page(request):
             "total_active_assignments": total_active_assignments,
             "total_open_work_orders": total_open_work_orders,
             "total_monthly_expenses": total_monthly_expenses,
+            "status_breakdown": json.dumps(chart_data["status_breakdown"]),
+            "work_order_breakdown": json.dumps(chart_data["work_order_breakdown"]),
         },
     )
 

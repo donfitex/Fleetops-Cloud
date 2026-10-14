@@ -1,133 +1,123 @@
-{% extends "base.html" %}
-{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FleetOps Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 24px;
+        }
+        h1 {
+            margin-top: 0;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+            margin: 24px 0;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 18px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .label {
+            color: #6b7280;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        th, td {
+            text-align: left;
+            padding: 12px 14px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        th {
+            background: #eef2ff;
+        }
+        .empty {
+            padding: 24px;
+            background: white;
+            border-radius: 10px;
+            color: #4b5563;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>FleetOps Dashboard</h1>
 
-{% block title %}Dashboard{% endblock %}
+        <div class="grid">
+            <div class="card">
+                <div class="label">Vehicles</div>
+                <div class="value">{{ total_vehicles }}</div>
+            </div>
+            <div class="card">
+                <div class="label">Drivers</div>
+                <div class="value">{{ total_drivers }}</div>
+            </div>
+            <div class="card">
+                <div class="label">Active assignments</div>
+                <div class="value">{{ total_active_assignments }}</div>
+            </div>
+            <div class="card">
+                <div class="label">Open work orders</div>
+                <div class="value">{{ total_open_work_orders }}</div>
+            </div>
+            <div class="card">
+                <div class="label">Monthly spend</div>
+                <div class="value">$ {{ total_monthly_expenses|floatformat:2 }}</div>
+            </div>
+        </div>
 
-{% block page_title %}Dashboard{% endblock %}
-
-{% block content %}
-
-{# ── Stat cards row ──────────────────────────────────────────────────── #}
-<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-5">
-
-  {# Total Vehicles #}
-  <div class="stat-card flex items-center gap-4">
-    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
-      <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0zM13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10m14 0H3m14 0a2 2 0 012 2M3 16a2 2 0 002 2" />
-      </svg>
-    </div>
-    <div>
-      <p class="text-xs font-medium uppercase tracking-wider text-gray-500">Vehicles</p>
-      <p class="mt-0.5 text-2xl font-bold text-gray-900">{{ total_vehicles }}</p>
-    </div>
-  </div>
-
-  {# Total Drivers #}
-  <div class="stat-card flex items-center gap-4">
-    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
-      <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-      </svg>
-    </div>
-    <div>
-      <p class="text-xs font-medium uppercase tracking-wider text-gray-500">Drivers</p>
-      <p class="mt-0.5 text-2xl font-bold text-gray-900">{{ total_drivers }}</p>
-    </div>
-  </div>
-
-  {# Active Assignments #}
-  <div class="stat-card flex items-center gap-4">
-    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-purple-50 text-purple-600">
-      <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-      </svg>
-    </div>
-    <div>
-      <p class="text-xs font-medium uppercase tracking-wider text-gray-500">Active Assignments</p>
-      <p class="mt-0.5 text-2xl font-bold text-gray-900">{{ total_active_assignments }}</p>
-    </div>
-  </div>
-
-  {# Open Work Orders #}
-  <div class="stat-card flex items-center gap-4">
-    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl
-      {% if total_open_work_orders > 0 %}bg-amber-50 text-amber-600{% else %}bg-gray-50 text-gray-400{% endif %}">
-      <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    </div>
-    <div>
-      <p class="text-xs font-medium uppercase tracking-wider text-gray-500">Open Work Orders</p>
-      <p class="mt-0.5 text-2xl font-bold text-gray-900">{{ total_open_work_orders }}</p>
-    </div>
-  </div>
-
-  {# Monthly Spend #}
-  <div class="stat-card flex items-center gap-4">
-    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600">
-      <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    </div>
-    <div>
-      <p class="text-xs font-medium uppercase tracking-wider text-gray-500">Total Spend</p>
-      <p class="mt-0.5 text-2xl font-bold text-gray-900">&pound;{{ total_monthly_expenses|floatformat:2 }}</p>
-    </div>
-  </div>
-
-</div>{# /stat cards #}
-
-
-{# ── Organization table + Chart row ─────────────────────────────────── #}
-<div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-
-  {# Organization breakdown table (takes 2/3 width on large screens) #}
-  <div class="lg:col-span-2">
-    <div class="rounded-xl bg-white shadow-sm ring-1 ring-gray-100">
-      <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-        <h2 class="text-sm font-semibold text-gray-900">Organization Overview</h2>
-      </div>
-
-      {% if organizations %}
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-100">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="th">Organization</th>
-              <th class="th text-right">Vehicles</th>
-              <th class="th text-right">Drivers</th>
-              <th class="th text-right">Active</th>
-              <th class="th text-right">Work Orders</th>
-              <th class="th text-right">Spend</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-50">
-            {% for org in organizations %}
-            <tr class="hover:bg-gray-50 transition-colors">
-              <td class="td font-medium text-gray-900">{{ org.organization_name }}</td>
-              <td class="td text-right">{{ org.vehicle_count }}</td>
-              <td class="td text-right">{{ org.driver_count }}</td>
-              <td class="td text-right">
-                <span class="{% if org.active_assignment_count > 0 %}badge-green{% else %}badge-gray{% endif %}">
-                  {{ org.active_assignment_count }}
-                </span>
-              </td>
-              <td class="td text-right">
-                <span class="{% if org.open_work_order_count > 0 %}badge-yellow{% else %}badge-gray{% endif %}">
-                  {{ org.open_work_order_count }}
-                </span>
-              </td>
-              <td class="td text-right font-medium">&pound;{{ org.monthly_expense_total|floatformat:2 }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
+        {% if organizations %}
+        <h2>Organization overview</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Organization</th>
+                    <th>Vehicles</th>
+                    <th>Drivers</th>
+                    <th>Active assignments</th>
+                    <th>Open work orders</th>
+                    <th>Monthly spend</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for org in organizations %}
+                <tr>
+                    <td>{{ org.organization_name }}</td>
+                    <td>{{ org.vehicle_count }}</td>
+                    <td>{{ org.driver_count }}</td>
+                    <td>{{ org.active_assignment_count }}</td>
+                    <td>{{ org.open_work_order_count }}</td>
+                    <td>$ {{ org.monthly_expense_total|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
       </div>
       {% else %}
@@ -155,47 +145,5 @@
       </div>
       {% endif %}
     </div>
-  </div>
-
-</div>{# /table+chart row #}
-
-{% endblock %}
-
-
-{% block extra_scripts %}
-{% if total_vehicles > 0 or total_drivers > 0 %}
-<script>
-  // Chart.js doughnut chart — Fleet Snapshot
-  // We use the context variables Django already passed to this template.
-  const ctx = document.getElementById("fleetChart");
-  if (ctx) {
-    new Chart(ctx, {
-      type: "doughnut",
-      data: {
-        labels: ["Vehicles", "Drivers", "Active Assignments", "Open Work Orders"],
-        datasets: [{
-          data: [
-            {{ total_vehicles }},
-            {{ total_drivers }},
-            {{ total_active_assignments }},
-            {{ total_open_work_orders }},
-          ],
-          backgroundColor: ["#2563eb", "#10b981", "#8b5cf6", "#f59e0b"],
-          borderWidth: 0,
-        }],
-      },
-      options: {
-        responsive: true,
-        cutout: "65%",
-        plugins: {
-          legend: {
-            position: "bottom",
-            labels: { font: { size: 12 }, padding: 12 },
-          },
-        },
-      },
-    });
-  }
-</script>
-{% endif %}
-{% endblock %}
+</body>
+</html>
