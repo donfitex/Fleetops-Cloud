@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-50">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}FleetOps Cloud{% endblock %} — FleetOps</title>
+
+  {# Compiled Tailwind CSS — built from static/css/main.css #}
+  <link rel="stylesheet" href="{% static 'css/output.css' %}" />
+
+  {# Inter font from Google Fonts #}
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  {# HTMX — lets us swap parts of the page without a full reload #}
+  <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
+
+  {# Alpine.js — small client-side interactions (dropdowns, modals, toggles) #}
+  <script src="https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js" defer></script>
+
+  {# Chart.js — dashboard visualisations #}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
+
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body class="h-full font-sans antialiased">
+
+  {% if user.is_authenticated %}
+
+  {# ── App shell: sidebar + main area ─────────────────────────────────── #}
+  <div class="flex h-full">
+
+    {# ── Sidebar ──────────────────────────────────────────────────────── #}
+    {% include "components/sidebar.html" %}
+
+    {# ── Main column ─────────────────────────────────────────────────── #}
+    <div class="flex flex-1 flex-col overflow-hidden">
+
+      {# Topbar and page title. The title block must live in this inherited
+         template (rather than inside an included component) so each page can
+         override it. #}
+      {% include "components/topbar.html" %}
+
+      {# Flash messages (Django messages framework) #}
+      {% if messages %}
+      <div class="px-6 pt-4 space-y-2" id="flash-messages">
+        {% for message in messages %}
+        <div
+          x-data="{ show: true }"
+          x-show="show"
+          x-transition
+          class="flex items-start justify-between rounded-lg px-4 py-3 text-sm font-medium shadow-sm
+            {% if message.tags == 'error' %}bg-red-50 text-red-800 ring-1 ring-red-200
+            {% elif message.tags == 'warning' %}bg-yellow-50 text-yellow-800 ring-1 ring-yellow-200
+            {% elif message.tags == 'success' %}bg-green-50 text-green-800 ring-1 ring-green-200
+            {% else %}bg-blue-50 text-blue-800 ring-1 ring-blue-200{% endif %}"
+        >
+          <span>{{ message }}</span>
+          <button @click="show = false" class="ml-4 shrink-0 opacity-60 hover:opacity-100">✕</button>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {# Page content #}
+      <main class="flex-1 overflow-y-auto px-6 py-6">
+        <h1 class="mb-6 text-lg font-semibold text-gray-900">
+          {% block page_title %}FleetOps Cloud{% endblock %}
+        </h1>
+        {% block content %}{% endblock %}
+      </main>
+
+    </div>{# /main column #}
+  </div>{# /flex shell #}
+
+  {% else %}
+
+  {# Unauthenticated pages (login, password reset) — no sidebar #}
+  <main class="min-h-full">
+    {% block auth_content %}{% endblock %}
+  </main>
+
+  {% endif %}
+
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

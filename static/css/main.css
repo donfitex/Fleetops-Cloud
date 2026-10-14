@@ -1,0 +1,71 @@
+/*
+  FleetOps Cloud — Tailwind CSS entry point.
+
+  Tailwind reads this file and injects three layers:
+    @tailwind base     — Tailwind's CSS reset (normalises browser defaults)
+    @tailwind components — Any reusable component classes we define
+    @tailwind utilities  — All the utility classes like p-4, text-gray-700, etc.
+
+  The build command scans templates and removes any classes we don't use,
+  so the final output CSS file is small and fast to load.
+*/
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Custom component classes go here.
+  These are Tailwind-powered but given a single reusable name.
+*/
+@layer components {
+  /* Primary action button */
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-brand-600 px-4 py-2
+           text-sm font-medium text-white shadow-sm transition-colors
+           hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500
+           focus:ring-offset-2 disabled:opacity-50;
+  }
+
+  /* Secondary / outlined button */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-lg border border-gray-300
+           bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm
+           transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2
+           focus:ring-brand-500 focus:ring-offset-2;
+  }
+
+  /* Danger button */
+  .btn-danger {
+    @apply inline-flex items-center justify-center rounded-lg bg-red-600 px-4 py-2
+           text-sm font-medium text-white shadow-sm transition-colors
+           hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500
+           focus:ring-offset-2;
+  }
+
+  /* A simple stat card */
+  .stat-card {
+    @apply rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-100;
+  }
+
+  /* Table header cell */
+  .th {
+    @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500;
+  }
+
+  /* Table data cell */
+  .td {
+    @apply px-4 py-3 text-sm text-gray-700;
+  }
+
+  /* Status badge base */
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  .badge-green  { @apply badge bg-green-100  text-green-800;  }
+  .badge-yellow { @apply badge bg-yellow-100 text-yellow-800; }
+  .badge-red    { @apply badge bg-red-100    text-red-800;    }
+  .badge-gray   { @apply badge bg-gray-100   text-gray-700;   }
+  .badge-blue   { @apply badge bg-blue-100   text-blue-800;   }
+}
