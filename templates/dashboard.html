@@ -4,20 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FleetOps Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        :root {
+            --bg: #f5f7fb;
+            --panel: #ffffff;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --primary: #2563eb;
+            --success: #16a34a;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text: #111827;
+        }
+        * { box-sizing: border-box; }
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            background: #f5f7fb;
-            color: #1f2937;
+            background: var(--bg);
+            color: var(--text);
         }
         .container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 40px auto;
             padding: 24px;
         }
-        h1 {
+        h1, h2 {
             margin-top: 0;
+        }
+        .headline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .badge {
+            background: #dbeafe;
+            color: #1d4ed8;
+            padding: 7px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
         }
         .grid {
             display: grid;
@@ -26,13 +56,13 @@
             margin: 24px 0;
         }
         .card {
-            background: white;
-            border-radius: 10px;
+            background: var(--panel);
+            border-radius: 12px;
             padding: 18px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
         .label {
-            color: #6b7280;
+            color: var(--muted);
             font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 0.08em;
@@ -42,10 +72,25 @@
             font-weight: 700;
             margin-top: 8px;
         }
+        .charts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+            margin: 24px 0 32px;
+        }
+        .chart-panel {
+            background: var(--panel);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            padding: 18px;
+        }
+        .chart-panel canvas {
+            max-height: 260px;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            background: white;
+            background: var(--panel);
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
@@ -53,22 +98,31 @@
         th, td {
             text-align: left;
             padding: 12px 14px;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid var(--border);
         }
         th {
             background: #eef2ff;
         }
         .empty {
             padding: 24px;
-            background: white;
+            background: var(--panel);
             border-radius: 10px;
             color: #4b5563;
+        }
+        @media (max-width: 768px) {
+            .headline {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>FleetOps Dashboard</h1>
+        <div class="headline">
+            <h1>FleetOps Dashboard</h1>
+            <span class="badge">Operations overview</span>
+        </div>
 
         <div class="grid">
             <div class="card">
@@ -94,6 +148,17 @@
         </div>
 
         {% if organizations %}
+        <div class="charts">
+            <div class="chart-panel">
+                <h2>Vehicle status</h2>
+                <canvas id="statusChart"></canvas>
+            </div>
+            <div class="chart-panel">
+                <h2>Work orders</h2>
+                <canvas id="workOrderChart"></canvas>
+            </div>
+        </div>
+
         <h2>Organization overview</h2>
         <table>
             <thead>
@@ -125,5 +190,61 @@
         </div>
         {% endif %}
     </div>
+
+    <script>
+        const statusChartData = {{ status_breakdown|safe }};
+        const workOrderChartData = {{ work_order_breakdown|safe }};
+
+        const statusCtx = document.getElementById('statusChart');
+        if (statusCtx && statusChartData.length) {
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: statusChartData.map(item => item.label),
+                    datasets: [{
+                        data: statusChartData.map(item => item.value),
+                        backgroundColor: ['#2563eb', '#16a34a', '#f59e0b'],
+                        borderWidth: 1,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        const workOrderCtx = document.getElementById('workOrderChart');
+        if (workOrderCtx && workOrderChartData.length) {
+            new Chart(workOrderCtx, {
+                type: 'bar',
+                data: {
+                    labels: workOrderChartData.map(item => item.label),
+                    datasets: [{
+                        label: 'Work orders',
+                        data: workOrderChartData.map(item => item.value),
+                        backgroundColor: ['#ef4444', '#f59e0b', '#22c55e'],
+                        borderRadius: 6,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+    </script>
 </body>
 </html>
