@@ -78,7 +78,20 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
-    @property
-    def full_name(self):
+    def get_full_name(self):
         name = f"{self.first_name} {self.last_name}".strip()
         return name if name else self.email
+
+    def get_short_name(self):
+        return self.first_name or self.email
+
+    @property
+    def full_name(self):
+        return self.get_full_name()
+
+    @property
+    def initials(self):
+        first = (self.first_name or "")[:1]
+        last = (self.last_name or "")[:1]
+        letters = f"{first}{last}".upper()
+        return letters or (self.email[:2].upper() if self.email else "FO")
