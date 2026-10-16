@@ -6,6 +6,7 @@ from apps.drivers.models import Driver
 from apps.expenses.models import Expense
 from apps.fleet.models import Vehicle
 from apps.maintenance.models import MaintenanceSchedule, WorkOrder
+from apps.notifications.models import Notification
 from apps.operations.models import FuelLog, Trip
 from apps.organizations.models import Membership, Organization
 
@@ -230,3 +231,25 @@ class AuditTrailSerializer(serializers.ModelSerializer):
             "created_at",
         ]
         read_only_fields = ["id", "organization", "actor", "created_at"]
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    organization = serializers.PrimaryKeyRelatedField(read_only=True)
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Notification
+        fields = [
+            "id",
+            "organization",
+            "user",
+            "title",
+            "message",
+            "level",
+            "is_read",
+            "read_at",
+            "link",
+            "metadata",
+            "created_at",
+        ]
+        read_only_fields = ["id", "organization", "user", "created_at", "read_at"]

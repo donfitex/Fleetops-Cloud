@@ -9,6 +9,7 @@ from apps.api.views import (
     FuelLogViewSet,
     MaintenanceScheduleViewSet,
     MembershipViewSet,
+    NotificationViewSet,
     OrganizationViewSet,
     TripViewSet,
     VehicleAssignmentViewSet,
@@ -33,6 +34,7 @@ router.register(r"trips", TripViewSet, basename="trips")
 router.register(r"expenses", ExpenseViewSet, basename="expenses")
 router.register(r"documents", FleetDocumentViewSet, basename="documents")
 router.register(r"audit-trails", AuditTrailViewSet, basename="audit-trails")
+router.register(r"notifications", NotificationViewSet, basename="notifications")
 
 urlpatterns = [
     path("auth/login/", login_user, name="api-login"),

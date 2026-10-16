@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FleetOps Dashboard</title>
+    <title>Dashboard</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -68,7 +68,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>FleetOps Dashboard</h1>
+        <h1>Dashboard</h1>
 
         <div class="grid">
             <div class="card">
@@ -119,31 +119,11 @@
                 {% endfor %}
             </tbody>
         </table>
-      </div>
-      {% else %}
-      <div class="px-5 py-12 text-center">
-        <p class="text-sm font-medium text-gray-900">No organizations yet</p>
-        <p class="mt-1 text-sm text-gray-500">
-          You are not a member of any organization. Ask an Owner to add you.
-        </p>
-      </div>
-      {% endif %}
-    </div>
-  </div>
-
-  {# Fleet breakdown chart (1/3 width) #}
-  <div class="rounded-xl bg-white shadow-sm ring-1 ring-gray-100">
-    <div class="px-5 py-4 border-b border-gray-100">
-      <h2 class="text-sm font-semibold text-gray-900">Fleet Snapshot</h2>
-    </div>
-    <div class="p-5">
-      {% if total_vehicles > 0 or total_drivers > 0 %}
-      <canvas id="fleetChart" class="max-h-52"></canvas>
-      {% else %}
-      <div class="flex h-40 items-center justify-center text-sm text-gray-400">
-        No fleet data to display yet.
-      </div>
-      {% endif %}
+        {% else %}
+        <div class="empty">
+            No active organization memberships were found for this user. Add a membership to see dashboard data.
+        </div>
+        {% endif %}
     </div>
 </body>
 </html>
