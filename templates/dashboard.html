@@ -1,6 +1,80 @@
+<<<<<<< HEAD
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
 {% block page_title %}Dashboard{% endblock %}
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 24px;
+        }
+        h1 {
+            margin-top: 0;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+            margin: 24px 0;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 18px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .label {
+            color: #6b7280;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        th, td {
+            text-align: left;
+            padding: 12px 14px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        th {
+            background: #eef2ff;
+        }
+        .empty {
+            padding: 24px;
+            background: white;
+            border-radius: 10px;
+            color: #4b5563;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dashboard</h1>
+>>>>>>> ebba8adad079f35301aa5ccc3643c5e9d0520dac
 
 {% block content %}
 <div class="space-y-6">
@@ -20,6 +94,7 @@
       </div>
     </div>
 
+<<<<<<< HEAD
     <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
       <div class="rounded-2xl border border-white/10 bg-white/8 p-4 backdrop-blur-sm">
         <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-100/75">Vehicles</p>
@@ -82,6 +157,39 @@
     <div class="rounded-2xl bg-white px-5 py-12 text-center shadow-sm ring-1 ring-gray-200">
       <p class="text-sm font-medium text-gray-900">No organizations yet</p>
       <p class="mt-1 text-sm text-gray-500">You are not a member of any organization. Ask an Owner to add you.</p>
+=======
+        {% if organizations %}
+        <h2>Organization overview</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Organization</th>
+                    <th>Vehicles</th>
+                    <th>Drivers</th>
+                    <th>Active assignments</th>
+                    <th>Open work orders</th>
+                    <th>Monthly spend</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for org in organizations %}
+                <tr>
+                    <td>{{ org.organization_name }}</td>
+                    <td>{{ org.vehicle_count }}</td>
+                    <td>{{ org.driver_count }}</td>
+                    <td>{{ org.active_assignment_count }}</td>
+                    <td>{{ org.open_work_order_count }}</td>
+                    <td>$ {{ org.monthly_expense_total|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">
+            No active organization memberships were found for this user. Add a membership to see dashboard data.
+        </div>
+        {% endif %}
+>>>>>>> ebba8adad079f35301aa5ccc3643c5e9d0520dac
     </div>
     {% endif %}
 

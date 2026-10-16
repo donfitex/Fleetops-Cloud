@@ -15,6 +15,7 @@ from apps.api.serializers import (
     FuelLogSerializer,
     MaintenanceScheduleSerializer,
     MembershipSerializer,
+    NotificationSerializer,
     OrganizationSerializer,
     TripSerializer,
     VehicleAssignmentSerializer,
@@ -27,6 +28,7 @@ from apps.drivers.models import Driver
 from apps.expenses.models import Expense
 from apps.fleet.models import Vehicle
 from apps.maintenance.models import MaintenanceSchedule, WorkOrder
+from apps.notifications.models import Notification
 from apps.operations.models import FuelLog, Trip
 from apps.organizations.models import Membership, Organization
 
@@ -229,3 +231,8 @@ class FleetDocumentViewSet(TenantScopedViewSet):
 class AuditTrailViewSet(TenantScopedViewSet):
     queryset = AuditTrail.objects.all()
     serializer_class = AuditTrailSerializer
+
+
+class NotificationViewSet(TenantScopedViewSet):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
